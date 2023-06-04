@@ -11,6 +11,7 @@
 *.sln.docstates
 
 C#_Project.txt
+LogFile.txt
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

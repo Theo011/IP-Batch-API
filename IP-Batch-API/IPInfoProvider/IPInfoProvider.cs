@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
+using System.Text.Json;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -10,13 +11,22 @@ namespace IPInfoProvider
         Task<IPDetails> GetDetails(string ip);
     }
 
-    public interface IPDetails
+    public class IPDetails
     {
-        string City { get; set; }
-        string Country { get; set; }
-        string Continent { get; set; }
-        double Latitude { get; set; }
-        double Longitude { get; set; }
+        [JsonPropertyName("city")]
+        public string? City { get; set; }
+
+        [JsonPropertyName("country_name")]
+        public string? Country { get; set; }
+
+        [JsonPropertyName("continent_name")]
+        public string? Continent { get; set; }
+
+        [JsonPropertyName("latitude")]
+        public double Latitude { get; set; }
+
+        [JsonPropertyName("longitude")]
+        public double Longitude { get; set; }
     }
 
     public class IPServiceNotAvailableException : ApplicationException
@@ -33,7 +43,7 @@ namespace IPInfoProvider
         {
             client = new HttpClient
             {
-                BaseAddress = new Uri("https://api.ipstack.com/")
+                BaseAddress = new Uri("http://api.ipstack.com/")
             };
             this.apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
         }
@@ -42,13 +52,22 @@ namespace IPInfoProvider
         {
             try
             {
-                string uri = $"https://api.ipstack.com/{ip}?access_key={apiKey}";
+                string uri = $"http://api.ipstack.com/{ip}?access_key={apiKey}";
 
                 HttpResponseMessage response = await client.GetAsync(uri).ConfigureAwait(false);
 
                 string json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                IPDetails data = JsonConvert.DeserializeObject<IPDetails>(json)!;
+                IPDetails data = JsonSerializer.Deserialize<IPDetails>(json)!;
+
+                /*#region debug
+                string logContent = $"apiKey: {apiKey}, ipDetails: {data.ToString()}, response: {json}";
+
+                using (StreamWriter fileStream = new("LogFile.txt", true))
+                {
+                    await fileStream.WriteLineAsync(logContent);
+                }
+                #endregion*/
 
                 return data;
             }
