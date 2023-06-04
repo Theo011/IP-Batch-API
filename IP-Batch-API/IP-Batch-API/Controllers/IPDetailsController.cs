@@ -1,5 +1,6 @@
 ﻿using IPInfoProvider;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace IP_Batch_API.Controllers
 {
@@ -19,7 +20,16 @@ namespace IP_Batch_API.Controllers
         {
             try
             {
-                var ipDetails = await _iPInfoProvider.GetDetails(ip);
+                var cache = HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
+
+                if (!cache.TryGetValue(ip, out var ipDetails))
+                {
+                    ipDetails = await _iPInfoProvider.GetDetails(ip);
+
+                    var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(1));
+
+                    cache.Set(ip, ipDetails, cacheOptions);
+                }
 
                 /*#region debug
                 using (StreamWriter fileStream = new("LogFile.txt", true))
