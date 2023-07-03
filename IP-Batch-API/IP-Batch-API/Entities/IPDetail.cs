@@ -5,7 +5,7 @@ namespace IP_Batch_API.Entities
     public class IPDetail
     {
         [Key]
-        public string Ip { get; private set; }
+        public string Ip { get; set; }
 
         public string? City { get; private set; }
 
@@ -26,5 +26,7 @@ namespace IP_Batch_API.Entities
             Latitude = latitude;
             Longitude = longitude;
         }
+
+        public IPDetail() { }
     }
 }

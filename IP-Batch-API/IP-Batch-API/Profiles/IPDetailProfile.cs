@@ -10,6 +10,7 @@ namespace IP_Batch_API.Profiles
         {
             CreateMap<IPDetail, IPDetailDto>();
             CreateMap<IPDetailForCreationAndUpdateDto, IPDetail>();
+            CreateMap<IPInfoProvider.IPDetails, IPDetail>();
         }
     }
 }
