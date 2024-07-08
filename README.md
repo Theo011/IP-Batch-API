@@ -1,5 +1,44 @@
 # IP Batch API
 
-Implementation of the [C# Project PDF](https://github.com/Theo011/IP-Batch-API/blob/main/C%23_Project.pdf).
+## Project Overview
 
-This C# project consists of three parts: (1) a Dynamic Link Library (DLL) that interfaces with the IPStack API, sending requests, parsing responses, and returning IP details while managing exceptions and issuing a custom "IPServiceNotAvailableException" as needed; (2) a C# .Net WebApi utilizing the DLL to serve IP details, featuring an optimization layer of caching (with .Net MemoryCache) and a repository (using Entity Framework and Microsoft SQL Server) for storing and retrieving IP details, minimizing redundant API calls, and managing cache expiration every minute; (3) an enhanced WebApi module that supports batch updates of IP details, processing in batches of 10, with a post request API for submitting IP details and a tracking mechanism using a returned GUID, offering flexibility in its implementation.
+This project implements a comprehensive IP information retrieval and management system as outlined in the [C# Project PDF](https://github.com/Theo011/IP-Batch-API/blob/main/C%23_Project.pdf). It consists of three main components:
+
+1. Dynamic Link Library (DLL)
+2. WebApi
+3. WebApi Batch Request Job
+
+## Components
+
+### 1. Dynamic Link Library (DLL)
+
+The DLL encapsulates the logic for communicating with the IPStack API.
+
+Key Features:
+- Implements the `IIPInfoProvider` interface
+- Provides a `GetDetails(ip)` method to retrieve IP information
+- Handles API communication exceptions
+- Throws a custom `IPServiceNotAvailableException` when necessary
+
+### 2. WebApi
+
+A C# .NET WebApi that utilizes the DLL to serve IP details.
+
+Key Features:
+- Exposes an endpoint to get details for a specific IP
+- Implements caching using .NET MemoryCache
+  - Cache items expire after one minute
+- Uses Entity Framework and Microsoft SQL Server for data persistence
+- Optimizes performance by retrieving data from cache or database before calling the external API
+
+### 3. WebApi Batch Request Job
+
+An enhanced module of the WebApi that supports batch operations for updating IP details.
+
+Key Features:
+- Provides an endpoint for submitting batch update requests
+  - Accepts an array of IP details to be updated
+  - Returns a GUID for job tracking
+- Implements a job progress tracking system
+  - Allows checking job status using the provided GUID
+- Processes submitted items in batches of 10
